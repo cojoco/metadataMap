@@ -2,7 +2,7 @@
 
 This runs the Metadata Map, both one-dimensional and two-dimensional versions.
 
-# INSTALL
+# Install
 
 It is recommended that you use a virtual environment while running this.
 You can set one up in './ENV' using 'virtualenv -p python3 ENV'.
