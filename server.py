@@ -10,10 +10,6 @@ import random
 import sys
 import numpy as np
 
-# This is ugly/dirty/hackish... Fix it if you like.
-# You could probably just install activetm.
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
-
 from activetm.active import evaluate
 from activetm.active import select
 from activetm import models
