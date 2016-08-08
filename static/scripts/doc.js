@@ -1,13 +1,13 @@
 //This class holds the doc number, text and labels
 
-function Document(number, text, title, labelX, labelY) {
+function Document(number, text, title, labelX, labelY, topics) {
   this.number = number //Document number, as given by the server
   this.id = 'doc' + number //ID of this document in the DOM
   this.text = text //Text of the document
   this.title = title //Title of the document, not always the most informative
   this.labelX = labelX //Label of the document for the horizontal axis
   this.labelY = labelY //Label of the document for the vertical axis
-  this.topics = undefined //This becomes the topics when we have them
+  this.topics = topics //This becomes the topics when we have them
 }
 
 Document.prototype = {

@@ -17,7 +17,7 @@ from activetm import utils
 
 APP = flask.Flask(__name__, static_url_path='')
 
-def get_user_dict_on_start():
+def _get_user_dict_on_start():
     """Load user data if server restarted"""
     # This maintains state if the server crashes
     try:
@@ -33,7 +33,7 @@ def get_user_dict_on_start():
     return {}
 
 
-def get_dataset():
+def _get_dataset():
     """Get the dataset from a pickle file in the local directory"""
     with open('dataset.pickle', 'rb') as in_file:
         dataset = pickle.load(in_file)
@@ -42,7 +42,7 @@ def get_dataset():
 
 ###############################################################################
 # USER_DICT holds information for individual users
-USER_DICT = get_user_dict_on_start()
+USER_DICT = _get_user_dict_on_start()
 # MODELS holds the model for each user
 MODELS = {}
 SELECT_METHOD = select.factory['random']
@@ -60,12 +60,12 @@ BASE_UNCERTAINTY = 0.5
 
 LOCK = threading.Lock()
 RNG = random.Random()
-DATASET = get_dataset()
+DATASET = _get_dataset()
 ALL_DOC_IDS = [doc for doc in range(DATASET.num_docs)]
 ###############################################################################
 
 
-def save_state():
+def _save_state():
     """Save the state of the server to a pickle file"""
     last_state = {}
     last_state['USER_DICT'] = USER_DICT
@@ -93,7 +93,7 @@ def remove_user():
     return flask.jsonify({})
 
 
-def build_model():
+def _build_model():
     """Build a model for a user"""
     settings = {}
     settings['model'] = 'semi_ridge_anchor'
@@ -103,14 +103,14 @@ def build_model():
     return models.build(RNG, settings)
 
 
-def train_model(uid):
+def _train_model(uid):
     """Train the model if we have enough labeled data"""
     restarted = False
     with LOCK:
         # If uid is not in MODELS, it means the server restarted and we
         #   need to retrain the model if it was trained before the restart
         if uid not in MODELS:
-            MODELS[uid] = (build_model(), build_model())
+            MODELS[uid] = (_build_model(), _build_model())
             restarted = True
         num_labeled_ids = len(USER_DICT[uid]['docs_with_labels'])
         # Train at 30, 40, 50... documents labeled
@@ -147,7 +147,7 @@ def get_uid():
     uid = str(uuid.uuid4())
     data = {'id': uid}
     # Create a model here
-    MODELS[uid] = (build_model(), build_model())
+    MODELS[uid] = (_build_model(), _build_model())
     with LOCK:
         USER_DICT[uid] = {
             'current_doc': -1,
@@ -157,7 +157,7 @@ def get_uid():
             'unlabeled_doc_ids': list(ALL_DOC_IDS),
             'training_complete': False
         }
-        save_state()
+        _save_state()
     return flask.jsonify(data)
 
 
@@ -187,8 +187,8 @@ def label_doc():
                                                               'title': title,
                                                               'topics': topics}
             USER_DICT[uid]['unlabeled_doc_ids'].remove(doc_number)
-    save_state()
-    return flask.jsonify({'user_id': uid, 'topics': topics})
+    _save_state()
+    return flask.jsonify({'topics': topics})
 
 
 @APP.route('/getdoc')
@@ -202,7 +202,7 @@ def get_doc():
     predicted_label_y = BASE_LABEL
     uncertainty_y = BASE_UNCERTAINTY
     if uid not in MODELS:
-        train_model(uid)
+        _train_model(uid)
     with LOCK:
         if uid in USER_DICT:
             # do what we need to get the right document for this user
@@ -223,7 +223,7 @@ def get_doc():
                 uncertainty_x = MODELS[uid][0].get_uncertainty(doc)
                 predicted_label_y = MODELS[uid][1].predict(doc)
                 uncertainty_y = MODELS[uid][1].get_uncertainty(doc)
-    save_state()
+    _save_state()
     return flask.jsonify(document=document,
                          doc_number=doc_number,
                          doc_title=doc_title,
@@ -238,7 +238,7 @@ def train_endpoint():
     """Start training the user's model if needed"""
     uid = str(flask.request.headers.get('uuid'))
     if uid in USER_DICT:
-        train_model(uid)
+        _train_model(uid)
     return flask.jsonify({})
 
 
@@ -250,14 +250,14 @@ def is_model_trained():
     if uid in USER_DICT:
         if USER_DICT[uid]['training_complete']:
             trained = True
-    return flask.jsonify({'id': uid, 'trained': trained})
+    return flask.jsonify({'trained': trained})
 
 
 @APP.route('/olddoc')
 def old_doc():
     """Get old document and predicted/labeled document values for a user"""
     uid = str(flask.request.headers.get('uuid'))
-    doc_number = int(flask.request.headers.get('doc_number'))
+    doc_number = USER_DICT[uid]['current_doc']
     document = DATASET.doc_metadata(doc_number, 'text')
     doc_title = DATASET.titles[doc_number]
     predicted_label_x = BASE_LABEL
@@ -265,7 +265,7 @@ def old_doc():
     predicted_label_y = BASE_LABEL
     uncertainty_y = BASE_UNCERTAINTY
     if uid not in MODELS:
-        train_model(uid)
+        _train_model(uid)
     with LOCK:
         if len(USER_DICT[uid]['docs_with_labels']) >= START_TRAINING:
             doc = DATASET.doc_tokens(doc_number)
@@ -312,7 +312,7 @@ def make_predictions():
                                                         'text': doc_text,
                                                         'topics': topics}
         USER_DICT[uid]['unlabeled_doc_ids'].remove(doc_number)
-    save_state()
+    _save_state()
     return flask.jsonify(documents=send_docs)
 
 
