@@ -21,6 +21,9 @@ $(document).ready(function() {
   //Label docs mode when labelButton is clicked
   $("#labelButton").on('click', labelButtonClicked)
 
+  //We start out in label mode, so this button starts out disabled
+  $("#labelButton").prop('disabled', true)
+
   //Assign a listener to handle the user wanting to get the model's predictions
   $("#predictForm").on('submit', makePredictions)
 

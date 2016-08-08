@@ -34,12 +34,16 @@ function useOldDocData(data) {
 //Handles the list mode button being clicked
 function listButtonClicked(e) {
   $("#mapBase").off('click').on('click', checkForDots)
+  $("#listButton").prop('disabled', true)
+  $("#labelButton").prop('disabled', false)
   console.log('In list mode')
 }
 
 //Handles the label mode button being clicked
 function labelButtonClicked(e) {
   $("#mapBase").off('click').on('click', mapClickHandler)
+  $("#labelButton").prop('disabled', true)
+  $("#listButton").prop('disabled', false)
   console.log('In label mode')
 }
 
