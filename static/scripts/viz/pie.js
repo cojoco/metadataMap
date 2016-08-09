@@ -2,8 +2,10 @@
 
 function makePieChart(elemId, data) {
 
-  var width = 300
-  var height = 300
+  $("#"+elemId+' svg').remove()
+
+  var width = 400
+  var height = 400
   var radius = Math.min(width, height) / 2
 
   var color = d3.scaleOrdinal()
@@ -40,8 +42,10 @@ function makePieChart(elemId, data) {
     .style('fill', function(d) { return color(d.data.name) })
 
   g.append('text')
-    .attr('transform', function(d) { return 'translate(' + labelArc.centroid(d)
-                                            + ')'})
+    .attr('text-anchor', 'middle')
+    .attr('transform', function(d) {
+      return 'translate(' + (0.8*labelArc.centroid(d)[0]) + ',' + (0.8*labelArc.centroid(d)[1]) + ')'
+    })
     .attr('dy', '.35em')
     .text(function(d) { return d.data.name })
 

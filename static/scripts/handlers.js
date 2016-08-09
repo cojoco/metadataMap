@@ -5,7 +5,8 @@ function useDocData(data) {
   Cookies.set('mdm_doc_number', data['doc_number'])
   $("#docText").text(data['document'])
   map.addDocument(new Document(data['doc_number'], data['document'],
-                               data['doc_title'], undefined, undefined))
+                               data['doc_title'], undefined, undefined,
+                               data['topics']))
   $("#waitContainer").hide()
 }
 
@@ -14,26 +15,39 @@ function useOldDocData(data) {
   Cookies.set('mdm_doc_number', data['doc_number'])
   $("#docText").text(data['document'])
   map.addDocument(new Document(data['doc_number'], data['document'],
-                               data['doc_title'], undefined, undefined))
+                               data['doc_title'], undefined, undefined,
+                               data['topics']))
   //Remake the dots that were there before the refresh
   for (var docNumber in data['labeled_docs']) {
     var doc = data['labeled_docs'][docNumber]
     map.addDocument(new Document(docNumber, doc['text'], doc['title'],
-                                 doc['x'], doc['y']))
+                                 doc['x'], doc['y'], doc['topics']))
     map.addDot(map.documents[docNumber].toDot())
   }
   for (var docNumber in data['predicted_docs']) {
     var doc = data['predicted_docs'][docNumber]
     map.addDocument(new Document(docNumber, doc['text'], doc['title'],
-                                 doc['x'], doc['y']))
+                                 doc['x'], doc['y'], doc['topics']))
     map.addDot(map.documents[docNumber].toDot())
   }
   $("#waitContainer").hide()
 }
 
+//Gets new topics if we just trained the model
+function getTopicsFromTraining(data) {
+  for (var docNumber in data['labeled_docs']) {
+    var doc = data['labeled_docs'][docNumber]
+    map.documents[docNumber].topics = doc['topics']
+  }
+  for (var docNumber in data['predicted_docs']) {
+    var doc = data['predicted_docs'][docNumber]
+    map.documents[docNumber].topics = doc['topics']
+  }
+}
+
 //Handles the list mode button being clicked
 function listButtonClicked(e) {
-  $("#mapBase").off('click').on('click', checkForDots)
+  $("#mapBase").off('click').on('click', listClickHandler)
   $("#listButton").prop('disabled', true)
   $("#labelButton").prop('disabled', false)
   console.log('In list mode')
@@ -41,14 +55,14 @@ function listButtonClicked(e) {
 
 //Handles the label mode button being clicked
 function labelButtonClicked(e) {
-  $("#mapBase").off('click').on('click', mapClickHandler)
+  $("#mapBase").off('click').on('click', labelClickHandler)
   $("#labelButton").prop('disabled', true)
   $("#listButton").prop('disabled', false)
   console.log('In label mode')
 }
 
 //Checks for dots under the mouse, called on mouseclick of the map in list mode
-function checkForDots(event) {
+function listClickHandler(event) {
   //Remove old documents so we only display those that were clicked on
   $(".listedDoc").remove()
   var list = []
@@ -97,6 +111,9 @@ function labelDoc(label_x, label_y) {
         url: '/train',
         headers: {'uuid': Cookies.get('mdm_uuid')},
         success: function(trainData) {
+          if (trainData['trained']) {
+            getTopicsFromTraining(trainData)
+          }
           $.ajax({
             url: '/getdoc',
             headers: {'uuid': Cookies.get('mdm_uuid')},
@@ -110,7 +127,7 @@ function labelDoc(label_x, label_y) {
 
 //This transforms a click on the map to a dot (on the map) and a label
 //  (in the model).
-function mapClickHandler(event) {
+function labelClickHandler(event) {
   //Subtract 1 to account for the border
   var xPos = parseInt(event.pageX) - leftMapOffset() - 1
   var yPos = parseInt(event.pageY) - topMapOffset() - 1
@@ -144,7 +161,9 @@ function subMakePredictions(numPredictions) {
         var docNum = docs[i]['doc_number']
         var docText = docs[i]['document']
         var docTitle = docs[i]['doc_title']
-        map.addDocument(new Document(docNum, docText, docTitle, labelX, labelY))
+        var docTopics = docs[i]['topics']
+        map.addDocument(new Document(docNum, docText, docTitle,
+                                     labelX, labelY, docTopics))
         map.addDot(map.documents[docNum].toDot())
         $("#waitContainer").hide()
       }

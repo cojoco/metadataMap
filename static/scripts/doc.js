@@ -122,11 +122,23 @@ Document.prototype = {
     //Stick the modal and tabs in the DOM
     $("#modals").append(modal)
     console.log(this.topics)
-    var data = [{name: 'Topic 1', value: 0.4},
-                {name: 'Topic 2', value: 0.2},
-                {name: 'Topic 3', value: 0.3},
-                {name: 'Topic 4', value: 0.1}]
-    makePieChart(tab3Id, data)
+//    var data = [{name: 'Topic 1', value: 0.4},
+//                {name: 'Topic 2', value: 0.2},
+//                {name: 'Topic 3', value: 0.3},
+//                {name: 'Topic 4', value: 0.1}]
+    if (this.topics !== null) {
+      var data = []
+      for (var i = 0; i < this.topics.length; i++) {
+        var topic = Number(this.topics[i])
+        if (topic > 0) {
+          data.push({name: 'Topic ' + i, value: topic})
+        }
+      }
+      makePieChart(tab3Id, data)
+    }
+    else {
+      $("#"+tab3Id).append("<p>No topics yet, label more documents!</p>")
+    }
     //Return a newly created list entry
     return $('<div>').attr('id', this.id + 'listed')
                    .attr('class', 'listedDoc')

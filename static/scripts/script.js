@@ -24,11 +24,11 @@ $(document).ready(function() {
   //We start out in label mode, so this button starts out disabled
   $("#labelButton").prop('disabled', true)
 
+  //Start out in label mode
+  $("#mapBase").on('click', labelClickHandler)
+
   //Assign a listener to handle the user wanting to get the model's predictions
   $("#predictForm").on('submit', makePredictions)
-
-  //Assign an onclick handler to the map
-  $("#mapBase").on('click', mapClickHandler)
 
   //Get a new uuid and needed document info if this is a new session
   if (Cookies.get('mdm_uuid') === undefined) {

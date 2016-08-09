@@ -106,6 +106,7 @@ def _build_model():
 def _train_model(uid):
     """Train the model if we have enough labeled data"""
     restarted = False
+    trained = False
     with LOCK:
         # If uid is not in MODELS, it means the server restarted and we
         #   need to retrain the model if it was trained before the restart
@@ -139,6 +140,8 @@ def _train_model(uid):
                 topics = list(MODELS[uid][0]._predict_topics(0, docws))
                 USER_DICT[uid]['predicted_docs'][doc_number]['topics'] = topics
             USER_DICT[uid]['training_complete'] = True
+            trained = True
+    return trained
 
 
 @APP.route('/uuid')
@@ -237,9 +240,16 @@ def get_doc():
 def train_endpoint():
     """Start training the user's model if needed"""
     uid = str(flask.request.headers.get('uuid'))
+    trained = False
     if uid in USER_DICT:
-        _train_model(uid)
-    return flask.jsonify({})
+        trained = _train_model(uid)
+        # If we trained, we need to give the client the new topics
+        labeled_docs = USER_DICT[uid]['docs_with_labels']
+        predicted_docs = USER_DICT[uid]['predicted_docs']
+        return flask.jsonify({'trained': trained,
+                              'labeled_docs': labeled_docs,
+                              'predicted_docs': predicted_docs})
+    return flask.jsonify({'trained': trained})
 
 
 @APP.route('/istrained')
