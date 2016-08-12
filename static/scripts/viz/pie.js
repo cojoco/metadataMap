@@ -25,23 +25,33 @@ function makePieChart(elemId, data) {
               .value(function(d) { return d.value })
 
   var svg = d3.select('#' + elemId).append('svg')
+              .attr('class', 'pieChart')
               .attr('width', width)
               .attr('height', height)
               .append('g')
+              .attr('class', 'pieGraphic')
               .attr('transform', 'translate(' + width / 2 + ',' +
                     height / 2 + ')')
 
 
-  var g = svg.selectAll('.arc')
+  var g1 = svg.selectAll('.arc')
             .data(pie(data))
             .enter().append('g')
             .attr('class', 'arc')
 
-  g.append('path')
+  g1.append('path')
     .attr('d', arc)
     .style('fill', function(d) { return color(d.data.name) })
 
-  g.append('text')
+  var g2 = d3.select('#' + elemId)
+            .select('.pieChart')
+            .select('.pieGraphic')
+            .selectAll('.pieText')
+            .data(pie(data))
+            .enter().append('g')
+            .attr('class', 'pieText')
+
+  g2.append('text')
     .attr('text-anchor', 'middle')
     .attr('transform', function(d) {
       return 'translate(' + (0.8*labelArc.centroid(d)[0]) + ',' + (0.8*labelArc.centroid(d)[1]) + ')'
