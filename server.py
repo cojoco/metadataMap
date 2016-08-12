@@ -14,6 +14,7 @@ from activetm.active import evaluate
 from activetm.active import select
 from activetm import models
 from activetm import utils
+from ankura.topic import topic_summary_tokens
 
 APP = flask.Flask(__name__, static_url_path='')
 
@@ -274,6 +275,7 @@ def old_doc():
     uncertainty_x = BASE_UNCERTAINTY
     predicted_label_y = BASE_LABEL
     uncertainty_y = BASE_UNCERTAINTY
+    topic_tokens = None
     if uid not in MODELS:
         _train_model(uid)
     with LOCK:
@@ -283,6 +285,8 @@ def old_doc():
             uncertainty_x = MODELS[uid][0].get_uncertainty(doc)
             predicted_label_y = MODELS[uid][1].predict(doc)
             uncertainty_y = MODELS[uid][1].get_uncertainty(doc)
+            topics = MODELS[uid][0].get_topics(0)
+            topic_tokens = topic_summary_tokens(topics, DATASET)
     return flask.jsonify(document=document,
                          doc_number=doc_number,
                          doc_title=doc_title,
@@ -291,7 +295,8 @@ def old_doc():
                          predicted_label_y=predicted_label_y,
                          uncertainty_y=uncertainty_y,
                          labeled_docs=USER_DICT[uid]['docs_with_labels'],
-                         predicted_docs=USER_DICT[uid]['predicted_docs'])
+                         predicted_docs=USER_DICT[uid]['predicted_docs'],
+                         topic_tokens=topic_tokens)
 
 
 @APP.route('/predictions')
@@ -329,12 +334,10 @@ def make_predictions():
 @APP.route('/topics')
 def get_topics():
     """Return the topics for each model"""
-    uid = str(flask.request.headers.get('Cookie'))[53:89]
-    doc_ids = list(USER_DICT[uid]['docs_with_labels'])
-    doc_tokens = DATASET.doc_tokens(doc_ids[0])
-    docws = MODELS[uid][0]._convert_vocab_space(doc_tokens)
-    topics = MODELS[uid][0]._predict_topics(0, docws)
-    return flask.jsonify({'topics':list(topics)})
+    uid = str(flask.request.headers.get('uuid'))
+    topics = MODELS[uid][0].get_topics(0)
+    topic_tokens = topic_summary_tokens(topics, DATASET)
+    return flask.jsonify({'topic_tokens': topic_tokens})
 
 
 if __name__ == '__main__':

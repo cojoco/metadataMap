@@ -30,6 +30,7 @@ function useOldDocData(data) {
                                  doc['x'], doc['y'], doc['topics']))
     map.addDot(map.documents[docNumber].toDot())
   }
+  map.topicTokens = data['topic_tokens']
   $("#waitContainer").hide()
 }
 
@@ -113,6 +114,13 @@ function labelDoc(label_x, label_y) {
         success: function(trainData) {
           if (trainData['trained']) {
             getTopicsFromTraining(trainData)
+            $.ajax({
+              url: '/topics',
+              headers: {'uuid': Cookies.get('mdm_uuid')},
+              success: function(topicsData) {
+                map.topicTokens = topicsData['topic_tokens']
+              }
+            })
           }
           $.ajax({
             url: '/getdoc',

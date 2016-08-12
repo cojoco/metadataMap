@@ -3,12 +3,12 @@
 function MetadataMap() {
   this.documents = {}
   this.dots = {}
+  this.topicTokens = []
 }
 
 MetadataMap.prototype = {
   constructor: MetadataMap,
 
-  //Getters and Setters
   addDocument: function addDocument(doc) {
     this.documents[doc.number] = doc
   },

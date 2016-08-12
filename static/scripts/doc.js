@@ -89,43 +89,9 @@ Document.prototype = {
                  '</div>'
     temp.html(tmpMod)
     var modal = temp.first()
-//    var modal = $('<div>').attr('id', modalId)
-//                          .attr('class', 'modal fade')
-//                          .attr('role', 'dialog')
-//    var modalOuter = $('<div>').attr('class', 'modal-dialog')
-//    var modalInner = $('<div>').attr('class', 'modal-content')
-//    var modalTabs = $('<div>').attr('class', 'tab-content')
-//    var modalTab1 = $('<div>').attr('id', tab1Id)
-//                      .attr('class', 'tab-pane fade in active')
-//                      .html('<p>This is the first tab</p>')
-//    var modalTab2 = $('<div>').attr('id', tab2Id)
-//                      .attr('class', 'tab-pane fade')
-//                      .html('<p>This is the second tab</p>')
-//    var modalTab3 = $('<div>').attr('id', tab3Id)
-//                      .attr('class', 'tab-pane fade')
-//                      .html('<p>This is the third tab</p>')
-//    var modalGUITabs = $('<ul>').attr('class', 'nav nav-tabs')
-//                      .append('<li class="active"><a data-toggle="tab" href="#' + tab1Id + '">Main</a></li>')
-//                      .append('<li><a data-toggle="tab" href="#' + tab2Id + '">Text</a></li>')
-//                      .append('<li><a data-toggle="tab" href="#' + tab3Id + '">Topics</a></li>')
-//    var modalHeader = $('<div>').attr('class', 'modal-header')
-//                        .html('<h4 class="modal-title">Title: ' + this.title +
-//                              '</h4>')
-//    var modalBody = $('<div>').attr('class', 'modal-body')
-//                      .append(modalGUITabs)
-//    //Put together the modal and its tab panes
-//    modalTabs.append(modalTab1).append(modalTab2).append(modalTab3)
-//    modalBody.append(modalTabs)
-//    modalInner.append(modalHeader).append(modalBody)
-//    modalOuter.append(modalInner)
-//    modal.append(modalOuter)
     //Stick the modal and tabs in the DOM
     $("#modals").append(modal)
     console.log(this.topics)
-//    var data = [{name: 'Topic 1', value: 0.4},
-//                {name: 'Topic 2', value: 0.2},
-//                {name: 'Topic 3', value: 0.3},
-//                {name: 'Topic 4', value: 0.1}]
     if (this.topics !== null) {
       var data = []
       for (var i = 0; i < this.topics.length; i++) {
@@ -135,6 +101,7 @@ Document.prototype = {
         }
       }
       makePieChart(tab3Id, data)
+      makeTopicLists(tab3Id, this.topics, map.topicTokens)
     }
     else {
       $("#"+tab3Id).append("<p>No topics yet, label more documents!</p>")
@@ -149,5 +116,18 @@ Document.prototype = {
   //Creates a Dot object from this document
   toDot: function toDot() {
     return new Dot(this.number, this.labelX * 100, this.labelY * 100)
+  }
+}
+
+function makeTopicLists(elemId, topics, topicTokens) {
+  for (var i = 0; i < topics.length; i++) {
+    var topic = Number(topics[i])
+    if (topic > 0) {
+      var topicsList = topicTokens[i]
+      console.log(topicsList)
+      $("#"+elemId).append('<p class="topicsList">Topic ' + i + ', ' +
+                           parseFloat(topic*100).toFixed(0) + '%: ' +
+                           topicsList.join(', ') + '</p>')
+    }
   }
 }
