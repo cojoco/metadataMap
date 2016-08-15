@@ -75,7 +75,6 @@ Document.prototype = {
                          '<div class="tab-content">' +
                            '<div id="' + tab1Id + '" class="tab-pane fade ' +
                              'active in">' +
-                             '<p>This is the first tab ' + tab1Id + '</p>' +
                            '</div>' +
                            '<div id="' + tab2Id + '" class="tab-pane fade">' +
                              '<p>' + this.text + '</p>' +
@@ -106,6 +105,7 @@ Document.prototype = {
     else {
       $("#"+tab3Id).append("<p>No topics yet, label more documents!</p>")
     }
+    makeWordCloud(tab1Id, this.text)
     //Return a newly created list entry
     return $('<div>').attr('id', this.id + 'listed')
                    .attr('class', 'listedDoc')

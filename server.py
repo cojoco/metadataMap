@@ -340,6 +340,12 @@ def get_topics():
     return flask.jsonify({'topic_tokens': topic_tokens})
 
 
+@APP.route('/vocab')
+def get_vocab():
+    """Return the vocabulary for the dataset"""
+    return flask.jsonify({'vocab': DATASET.vocab})
+
+
 if __name__ == '__main__':
     APP.run(debug=True,
             host='0.0.0.0',
