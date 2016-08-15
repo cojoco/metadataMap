@@ -12,7 +12,7 @@ function makeWordCloud(elemId, vocabText) {
       .words(vocabText)
       .fontSize(function(d) { return Math.sqrt(d.freq) * 15 })
       .padding(5)
-      .rotate(function() { return (~~(Math.random()*6) - 3) * 30 })
+      .rotate(function() { return (~~(Math.random()*6) - 3) * 20 })
       .font('Impact')
       .on('end', function() { draw(vocabText, elemId, layout) })
 
@@ -34,7 +34,9 @@ function draw(words, elemId, layout) {
           .enter().append('text')
             .style('font-size', function(d) { return d.size + 'px'; })
             .style('font-family', 'Impact')
-            .style('fill', function(d, i) { return fill[i]; })
+            .style('fill', function(d, i) { 
+              return fill[i%20]
+            })
             .attr('text-anchor', 'middle')
             .attr('transform', function(d) {
                 return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')';

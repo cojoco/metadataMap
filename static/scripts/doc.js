@@ -7,7 +7,6 @@ function Document(number, text, title, labelX, labelY, topics) {
   var tempVocabText = {}
   var textList = text.replace(/[,.!?]/g, ' ').split(' ')
   for (var i = 0; i < textList.length; i++) {
-    console.log(textList[i])
     if (tempVocabText[textList[i]]) {
       tempVocabText[textList[i]] += 1
     }
@@ -19,7 +18,6 @@ function Document(number, text, title, labelX, labelY, topics) {
   for (var word in tempVocabText) {
     this.vocabText.push({'text': word, 'freq': tempVocabText[word]})
   }
-  console.log(this.vocabText)
   this.title = title //Title of the document, not always the most informative
   this.labelX = labelX //Label of the document for the horizontal axis
   this.labelY = labelY //Label of the document for the vertical axis
