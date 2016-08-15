@@ -4,6 +4,7 @@ function MetadataMap() {
   this.documents = {}
   this.dots = {}
   this.topicTokens = []
+  this.vocab = []
 }
 
 MetadataMap.prototype = {

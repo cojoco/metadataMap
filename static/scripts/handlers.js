@@ -204,6 +204,9 @@ function makePredictions(event) {
 
 //Starts a new session, assuming we have no uuid
 function startNewSession() {
+  $.get('/vocab', function(data) {
+    map.vocab = data['vocab']
+  })
   $.get('/uuid', function(data) {
     Cookies.set('mdm_uuid', data['id'])
     $.ajax({
@@ -217,6 +220,9 @@ function startNewSession() {
 //Resumes an old session, which assumes we have a uuid
 function resumeOldSession() {
   $("#waitContainer").show()
+  $.get('/vocab', function(data) {
+    map.vocab = data['vocab']
+  })
   $.ajax({
     url: '/olddoc',
     headers: {'uuid': Cookies.get('mdm_uuid'),

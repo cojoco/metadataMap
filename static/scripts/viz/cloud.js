@@ -4,18 +4,17 @@ var cloudLayoutWidth = 500
 var cloudLayoutHeight = 300
 var fill = d3.schemeCategory20
 
-function makeWordCloud(elemId, docTokens) {
-  var frequency_list = [{'text': 'study', 'freq': 20}, {'text': 'word', 'freq': 20},
-                        {'text': 'another', 'freq': 10}, {'text': 'some', 'freq': 10}] 
+function makeWordCloud(elemId, vocabText) {
+  $("#"+elemId+' svg').remove()
 
   var layout = d3.layout.cloud()
       .size([cloudLayoutWidth, cloudLayoutHeight])
-      .words(frequency_list)
-      .fontSize(function(d) { return d.freq * 2 })
+      .words(vocabText)
+      .fontSize(function(d) { return Math.sqrt(d.freq) * 15 })
       .padding(5)
       .rotate(function() { return (~~(Math.random()*6) - 3) * 30 })
       .font('Impact')
-      .on('end', function() { draw(frequency_list, elemId, layout) })
+      .on('end', function() { draw(vocabText, elemId, layout) })
 
   layout.start()
 }

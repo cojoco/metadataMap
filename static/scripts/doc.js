@@ -4,6 +4,22 @@ function Document(number, text, title, labelX, labelY, topics) {
   this.number = number //Document number, as given by the server
   this.id = 'doc' + number //ID of this document in the DOM
   this.text = text //Text of the document
+  var tempVocabText = {}
+  var textList = text.replace(/[,.!?]/g, ' ').split(' ')
+  for (var i = 0; i < textList.length; i++) {
+    console.log(textList[i])
+    if (tempVocabText[textList[i]]) {
+      tempVocabText[textList[i]] += 1
+    }
+    else if (map.vocab.indexOf(textList[i]) !== -1) {
+      tempVocabText[textList[i]] = 1
+    }
+  }
+  this.vocabText = [] //Text of the document that is in the vocabulary
+  for (var word in tempVocabText) {
+    this.vocabText.push({'text': word, 'freq': tempVocabText[word]})
+  }
+  console.log(this.vocabText)
   this.title = title //Title of the document, not always the most informative
   this.labelX = labelX //Label of the document for the horizontal axis
   this.labelY = labelY //Label of the document for the vertical axis
@@ -90,7 +106,6 @@ Document.prototype = {
     var modal = temp.first()
     //Stick the modal and tabs in the DOM
     $("#modals").append(modal)
-    console.log(this.topics)
     if (this.topics !== null) {
       var data = []
       for (var i = 0; i < this.topics.length; i++) {
@@ -105,7 +120,7 @@ Document.prototype = {
     else {
       $("#"+tab3Id).append("<p>No topics yet, label more documents!</p>")
     }
-    makeWordCloud(tab1Id, this.text)
+    makeWordCloud(tab1Id, this.vocabText)
     //Return a newly created list entry
     return $('<div>').attr('id', this.id + 'listed')
                    .attr('class', 'listedDoc')
@@ -124,7 +139,6 @@ function makeTopicLists(elemId, topics, topicTokens) {
     var topic = Number(topics[i])
     if (topic > 0) {
       var topicsList = topicTokens[i]
-      console.log(topicsList)
       $("#"+elemId).append('<p class="topicsList">Topic ' + i + ', ' +
                            parseFloat(topic*100).toFixed(0) + '%: ' +
                            topicsList.join(', ') + '</p>')
