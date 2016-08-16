@@ -5,4 +5,4 @@ sklearn
 flask
 scipy
 bs4
--e git+https://github.com/nOkuda/activetm#egg=activetm
+-e git+https://github.com/cojoco/activetm#egg=activetm
