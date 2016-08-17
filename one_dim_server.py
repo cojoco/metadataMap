@@ -230,6 +230,8 @@ def old_doc():
 
 
 if __name__ == '__main__':
+    print("THIS IS AN INCOMPLETE PROTOTYPE, DO NOT EXPECT IT TO WORK WELL")
+
     APP.run(debug=True,
             host='0.0.0.0',
             port=3000)
