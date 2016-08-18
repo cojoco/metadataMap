@@ -33,6 +33,10 @@ body {
   padding-bottom: 0px;
 }
 
+.modalSubheader {
+  border-bottom: 1px solid lightgray;
+}
+
 #docContainer {
   margin-top: 72vh;
   width: 100%;

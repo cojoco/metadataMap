@@ -89,6 +89,10 @@ Document.prototype = {
                          '<div class="tab-content">' +
                            '<div id="' + tab1Id + '" class="tab-pane fade ' +
                              'active in">' +
+                             '<h4 class="modalSubheader">Metadata and Metrics</h4>' +
+                             '<div id="' + tab1Id + 'Meta"></div>' +
+                             '<h4 class="modalSubheader">Word Cloud</h4>' +
+                             '<div id="' + tab1Id + 'Cloud"></div>' +
                            '</div>' +
                            '<div id="' + tab2Id + '" class="tab-pane fade">' +
                              '<p>' + this.text + '</p>' +
@@ -118,7 +122,8 @@ Document.prototype = {
     else {
       $("#"+tab3Id).append("<p>No topics yet, label more documents!</p>")
     }
-    makeWordCloud(tab1Id, this.vocabText)
+    makeWordCloud(tab1Id + 'Cloud', this.vocabText)
+    generateMetrics(tab1Id + 'Meta', this.text)
     //Return a newly created list entry
     return $('<div>').attr('id', this.id + 'listed')
                    .attr('class', 'listedDoc')
@@ -142,4 +147,15 @@ function makeTopicLists(elemId, topics, topicTokens) {
                            topicsList.join(', ') + '</p>')
     }
   }
+}
+
+function generateMetrics(elemId, text) {
+  var textList = text.split(' ')
+  var tokenCount = textList.length
+  var typeCount = $.uniqueSort(textList).length
+  var lengthInChars = text.length
+  var metrics = '<p><strong>Token Count:</strong> ' + tokenCount + '</p>' +
+                '<p><strong>Length in Characters:</strong> ' + lengthInChars + '</p>' +
+                '<p><strong>Type Count:</strong> ' + typeCount + '</p>'
+  $("#"+elemId).append(metrics)
 }
