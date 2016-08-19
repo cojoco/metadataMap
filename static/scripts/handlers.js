@@ -39,10 +39,12 @@ function getTopicsFromTraining(data) {
   for (var docNumber in data['labeled_docs']) {
     var doc = data['labeled_docs'][docNumber]
     map.documents[docNumber].topics = doc['topics']
+    map.documents[docNumber].changed = true
   }
   for (var docNumber in data['predicted_docs']) {
     var doc = data['predicted_docs'][docNumber]
     map.documents[docNumber].topics = doc['topics']
+    map.documents[docNumber].changed = true
   }
 }
 
@@ -114,6 +116,8 @@ function labelDoc(label_x, label_y) {
         success: function(trainData) {
           if (trainData['trained']) {
             getTopicsFromTraining(trainData)
+            //Remove items from the docList to ensure they are recreated
+            $('#docList div').remove()
             $.ajax({
               url: '/topics',
               headers: {'uuid': Cookies.get('mdm_uuid')},
