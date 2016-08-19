@@ -89,7 +89,7 @@ body {
 #listButton {
   float: right;
   margin-left: 5px;
-  margin-right: 5px;
+  margin-right: 10px;
 }
 
 #mapBase {
@@ -111,7 +111,7 @@ body {
 
 #predictForm {
   display: inline-block;
-  margin-left: 5px;
+  margin-left: 10px;
 }
 
 #waitContainer {
