@@ -2,6 +2,11 @@ body {
   background-color: black;
 }
 
+.docTextTab {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
 .dot {
   fill: white;
   stroke: white;
@@ -37,9 +42,24 @@ body {
   border-bottom: 1px solid lightgray;
 }
 
+#buttonContainer {
+  clear: both;
+  position: fixed;
+  bottom: 0;
+  z-index: 10;
+  height: 36px;
+  margin-top: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  background-color: black;
+}
+
 #docContainer {
   margin-top: 72vh;
   width: 100%;
+  overflow-y: auto;
+  max-height: 23vh;
 }
 
 #docList {
@@ -69,6 +89,7 @@ body {
 #listButton {
   float: right;
   margin-left: 5px;
+  margin-right: 5px;
 }
 
 #mapBase {
@@ -90,6 +111,7 @@ body {
 
 #predictForm {
   display: inline-block;
+  margin-left: 5px;
 }
 
 #waitContainer {

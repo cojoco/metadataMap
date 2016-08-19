@@ -108,7 +108,7 @@ Document.prototype = {
                                '<h4 class="modalSubheader">Word Cloud</h4>' +
                                '<div id="' + tab1Id + 'Cloud"></div>' +
                              '</div>' +
-                             '<div id="' + tab2Id + '" class="tab-pane fade">' +
+                             '<div id="' + tab2Id + '" class="tab-pane fade docTextTab">' +
                                '<p>' + this.text + '</p>' +
                              '</div>' +
                              '<div id="' + tab3Id + '" class="tab-pane fade">' +
